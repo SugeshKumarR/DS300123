@@ -1,0 +1,772 @@
+date 17-7-23             9673613027 
+/* Numeric Functions */     
+
+/*abs()*/
+select abs(-5.24);
+select abs(5.24);
+
+/* ceil */
+select ceil(5.24);
+select ceil(5.94);
+select ceil(-5.94);
+
+/* floor */
+select floor(5.24);
+select floor(5.94);
+select floor(-5.94);
+
+/* deegres */
+select degrees(3.14159);
+
+/*radians*/
+select radians(179.9998479605043);
+
+/*mod*/
+select mod(101,2);
+
+/*pow*/
+select pow(5,2);
+select pow(10,5);
+
+/*sqrt*/
+select sqrt(25);
+select sqrt(110);
+
+/*round*/
+select round(5.648,1);
+
+/*string functions*/
+
+/* char_length / length */
+select length("Mohsin");
+select char_length("Mohsin");
+
+/* concat */
+select concat("Mohsin"," ","Pothiyawala") as Full_name;
+select * from employee_info;
+
+select concat(empfname," ",emplname) as Full_name from employee_info;
+
+/* instr */
+select instr("Mohsin","h");
+select empfname, instr(empfname,"a") from employee_info;
+
+/* lower / lcase */
+select lower("MOHSIN");
+select lcase("MOHSIN");
+
+/* upper / ucase */
+select upper("mohsin");
+select ucase("mohsin");
+
+/* left */
+select left("Mohsin",3);
+select empfname, left(empfname,4) from employee_info;
+
+/* right */
+select right("Mohsin",4);
+
+/* substr */
+select substr("Mohsin",4,3);
+
+/* ltrim / rtrim */
+select ltrim("     Mohsin");
+select ltrim(rtrim("     Mohsin"));
+
+/* date functions */
+
+/*curdate / current_date */
+select curdate();
+select current_date();
+
+/*now()*/
+select now();
+
+/* datediff */
+select datediff("2023-07-17","2023-07-10");
+
+/*day*/
+select day("2023-07-17"); /* HH:MI:SS*/
+select day(curdate());
+
+/* month */
+select month(curdate());
+
+/*year*/
+select year(curdate());
+
+/* dayname */
+select dayname(curdate());
+
+/*dayofweek*/
+select dayofweek(curdate());
+
+/*weekofyear*/
+select weekofyear(curdate());
+
+/*DOB - 1997-03-14*/
+select round(datediff(curdate(),"1997-03-14")/365); 
+
+18-7-23
+
+select * from employee_info;
+
+select * from employee_info
+where gender = "F";
+
+/*v*/
+
+select * from employee_info
+where empfname like "v%";
+
+select * from employee_info
+where address = "bangalore" and salary > 50000;
+
+/* address should not be bangalore and salary should be in range of 30000 - 50000, empfname and lastname ,salary in output*/
+
+select empfname, emplname, salary, address from employee_info
+where address <> "Bangalore" and salary >= 30000 and salary <= 50000;
+
+select empfname, emplname, salary, address from employee_info
+where address <> "Bangalore" and salary between 30000 and 50000;
+
+/* all the details who are from bangalore and salary should not be 35000 and 38000*/
+
+select * from employee_info
+where address = "Bangalore" and salary <> 35000 and salary <> 38000;
+
+select * from employee_info
+where address = "Bangalore" and salary not in (35000,38000);
+
+/* group by
+order by 
+aggregate functions*/
+
+select * from employee_info
+order by salary desc;
+
+select * from employee_info
+order by salary;
+
+select * from employee_info
+order by empfname;
+
+select * from employee_info
+order by DOB;
+
+select salary from employee_info
+order by salary desc;
+
+select distinct project from employee_info;
+
+select distinct department from employee_info;
+
+select * from employee_info
+order by salary desc;
+
+select distinct salary from employee_info
+order by salary desc
+limit 3,4;
+
+select address,project,salary, count(*) from employee_info
+group by project,address,salary;
+
+select address from employee_info
+group by address;
+
+/* sum  avg  count  min  max  */
+
+select sum(salary) as total_amount from employee_info;
+
+select count(*) as no_of_records from employee_info;
+
+select max(Salary) from employee_info;
+
+select min(Salary) from employee_info;
+
+select round(avg(salary)) from employee_info;
+
+select department, sum(salary) as total_Salary from employee_info
+group by department;
+
+select address, sum(salary) as total_amount, count(*) as no_of_employees, avg(salary) as average_salary,
+                max(salary) as maximum_salary, min(salary) as minimum_salary from employee_info
+group by address;
+
+select address , avg(salary) from employee_info
+group by address
+having avg(salary) > 50000; 
+
+select concat(day("1997-01-07"),
+			 case day("1997-01-07")
+             when 1 then "st"
+             when 2 then "nd"
+             when 3 then "rd"
+             else "th"
+		     end," ", monthname("1997-01-07")," ", year("1997-01-07")) as Formatted_date; 
+
+21-7-23
+/* case when expression - simple case when expression
+                        - searched case when expression */
+                        
+select * from employee_info;
+
+select *,
+case gender
+when "M" then "Boy"
+when "F" then "Girl"
+end as gender_01
+from employee_info;
+
+/* additional column name should be position - grade 01 >= 60000, >=45000 grade 02, >=35000 then grade 03, else grade 04 */
+
+select *,
+case 
+when salary >= 60000 then "Grade 01"
+when salary >= 45000 then "Grade 02"
+when salary >= 35000 then "Grade 03"
+else "Grade 04"
+end as Position
+from employee_info
+order by salary desc;
+
+update employee_info
+set gender = "F"
+where gender = "M";
+
+update employee_info
+set gender = case when gender = "M" then "F" else "M" end;
+
+select * from employee_info;
+
+select * from employee_info
+order by department;
+
+with cte as(select *,
+dense_rank() over(partition by department order by salary desc) as Highest_Salary,
+dense_rank() over(partition by department order by salary) as Lowest_Salary
+from employee_info)
+select department,
+max(case when Highest_Salary = 1 then empfname else null end) as Highest_Salary_Emp_Name,
+min(case when Lowest_Salary = 1 then empfname else null end) as Lowest_Salary_Emp_Name
+from cte
+group by department; 
+
+
+select emp_id,
+max(case when action = "in" then time end) as in_time,
+max(case when action = "out" then time end) as out_time 
+from hospital
+group by emp_id
+having in_time > out_time or out_time is null; 
+Mohsin Pothiyawala says:create table employee_info(
+emp_id int,
+EmpFName varchar(100),
+EmpLName varchar(100),
+Department varchar(100),
+Project varchar(100),
+Address varchar(100),
+DOB date,
+gender varchar(100),
+salary int); 
+
+insert into employee_info values(1,"Sanjay","Mehra","HR","P1","Hyderabad","1976-12-01","M",80000);
+insert into employee_info values(2,"Ananya","Mishra","Admin","P2","Delhi","1968-05-02","F",60000);
+insert into employee_info values(3,"Rohan","Diwan","Account","P3","Mumbai","1980-01-01","M",40000);
+insert into employee_info values(4,"Sonia","Kulkarni","HR","P1","Hyderabad","1992-05-02","F",30000);
+insert into employee_info values(5,"Ankit","Kapoor","Admin","P2","Delhi","1994-07-03","M",50000);
+insert into employee_info values(6,"Vikas","Kumar","HR","P1","Bangalore","2002-11-01","M",40000);
+insert into employee_info values(7,"Vijay","Kumar","HR","P1","Bangalore","2002-11-02","M",50000);
+insert into employee_info values(8,"Kiran","Kumar","HR","P1","Bangalore","2002-11-03","M",35000);
+insert into employee_info values(9,"Somu","Reddy","Admin","P1","Bangalore","1994-11-03","M",35000);
+insert into employee_info values(10,"Shivu","Reddy","Admin","P1","Bangalore","1994-11-05","M",38000);
+insert into employee_info values(11,"Vaibhav","Reddy","Admin","P2","Bangalore","1994-11-06","M",48000);
+insert into employee_info values(13,"Gaja","Reddy","Account","P3","Bihar","1996-11-06","M",38000);
+insert into employee_info values(14,"Babu","Reddy","Account","P3","Bihar","1996-10-06","M",32000); 
+
+
+create table employee_info(
+emp_id int,
+EmpFName varchar(100),
+EmpLName varchar(100),
+Department varchar(100),
+Project varchar(100),
+Address varchar(100),
+DOB date,
+gender varchar(100),
+salary int); 
+insert into employee_info values(1,"Sanjay","Mehra","HR","P1","Hyderabad","1976-12-01","M",80000);
+insert into employee_info values(2,"Ananya","Mishra","Admin","P2","Delhi","1968-05-02","F",60000);
+insert into employee_info values(3,"Rohan","Diwan","Account","P3","Mumbai","1980-01-01","M",40000);
+insert into employee_info values(4,"Sonia","Kulkarni","HR","P1","Hyderabad","1992-05-02","F",30000);
+insert into employee_info values(5,"Ankit","Kapoor","Admin","P2","Delhi","1994-07-03","M",50000);
+insert into employee_info values(6,"Vikas","Kumar","HR","P1","Bangalore","2002-11-01","M",40000);
+insert into employee_info values(7,"Vijay","Kumar","HR","P1","Bangalore","2002-11-02","M",50000);
+insert into employee_info values(8,"Kiran","Kumar","HR","P1","Bangalore","2002-11-03","M",35000);
+insert into employee_info values(9,"Somu","Reddy","Admin","P1","Bangalore","1994-11-03","M",35000);
+insert into employee_info values(10,"Shivu","Reddy","Admin","P1","Bangalore","1994-11-05","M",38000);
+insert into employee_info values(11,"Vaibhav","Reddy","Admin","P2","Bangalore","1994-11-06","M",48000);
+insert into employee_info values(13,"Gaja","Reddy","Account","P3","Bihar","1996-11-06","M",38000);
+insert into employee_info values(14,"Babu","Reddy","Account","P3","Bihar","1996-10-06","M",32000); 
+Mohsin Pothiyawala says:create table hospital ( 
+emp_id int, 
+action varchar(10), 
+time datetime); 
+Mohsin Pothiyawala says:insert into hospital values ('1', 'in', '2019-12-22 09:00:00');
+insert into hospital values ('1', 'out', '2019-12-22 09:15:00');
+insert into hospital values ('2', 'in', '2019-12-22 09:00:00');
+insert into hospital values ('2', 'out', '2019-12-22 09:15:00');
+insert into hospital values ('2', 'in', '2019-12-22 09:30:00');
+insert into hospital values ('3', 'out', '2019-12-22 09:00:00');
+insert into hospital values ('3', 'in', '2019-12-22 09:15:00');
+insert into hospital values ('3', 'out', '2019-12-22 09:30:00');
+insert into hospital values ('3', 'in', '2019-12-22 09:45:00');
+insert into hospital values ('4', 'in', '2019-12-22 09:45:00');
+insert into hospital values ('5', 'out', '2019-12-22 09:40:00'); 
+
+
+24-7-23
+
+select * from employee_info
+where address = "Bangalore";
+
+select * from employee_info
+where address in (select address from employee_info
+where address = "Bangalore");
+
+select * from employee_info
+where salary in (select max(salary) from employee_info);
+
+select max(salary) from employee_info
+where salary not in (select max(salary) from employee_info);
+
+select distinct salary from employee_info
+order by salary desc
+limit 1,1;
+
+select * from employee_info
+where address = "Bangalore" and project = "P1" and department = "Admin";
+
+select * from employee_info
+where address in (select address from employee_info
+where address = "bangalore") and project in
+(select project from employee_info
+where project = "P1") and department in 
+(select department from employee_info
+where department = "Admin");
+
+create table tabe110(
+emp_id int,
+emp_name varchar(100));
+
+create table tabe111(
+emp_id int,
+emp_name varchar(100));
+
+insert into tabe110 values(1,"Mohsin"),(2,"Sugesh"),(3,"Vamshi"),(4,"Shiva");
+
+select * from tabe110;
+select * from tabe111;
+
+insert into tabe111 values(1,"Mohsin"),(2,"Sugesh"),(3,"Vamshi"),(5,"Priya");
+
+select * from tabe110 
+where emp_id in (select emp_id from tabe111);
+
+select tabe110.* from tabe110
+inner join tabe111
+on tabe110.emp_id = tabe111.emp_id;
+
+desc tabe110;
+
+create table table112(
+emp_id int,
+emp_name varchar(100));
+
+insert into table112
+select distinct * from tabe110;
+
+select * from tabe110;
+select * from table112;
+
+drop table tabe110;
+
+rename table table112 to tabe110; 
+
+25-7-23
+
+alter table self_join
+add column age int;
+
+alter table self_join
+modify column age int after emp_name;
+
+/* set operators - union / union all / intersect / except */
+
+select * from table101;
+select * from table102;
+
+select * from table101
+union 
+select * from table102;
+
+select * from table101
+union all
+select * from table102;
+
+select * from table101
+where id in (select id from table102);
+
+select * from table101
+where id not in(select id from table102);
+
+select * from table102
+where id not in(select id from table101);
+
+select * from employee_info;
+
+select empfname, emplname, address from employee_info
+where address = "Bangalore"
+union
+select empfname, emplname, address from employee_info
+where address = "Hyderabad";
+
+select * from employee_info
+where address = "Bangalore"
+union
+select * from employee_info
+where address = "Hyderabad";
+
+select * from table101
+intersect
+select * from table102;
+
+select * from table102
+except
+select * from table101;
+
+select * from employee_info;
+select employee_info.* from employee_info;
+select e.* from employee_info as e;
+select empfname, emplname from employee_info;
+select employee_info.empfname, employee_info.emplname from employee_info;
+select e.empfname, e.emplname from employee_info as e;
+
+select T1.* from table101 as T1
+inner join table102 T2
+on 
+T1.id
+ = 
+T2.id
+;
+
+select * from table101
+where id in(select id from table102);
+
+select T1.* from table101 as T1
+left join table102 T2
+on 
+T1.id
+ = 
+T2.id
+;
+
+select * from table101
+where id in(select id from table102)
+union
+select * from table101
+where id not in(select id from table102);
+
+select T2.* from table101 as T1
+right join table102 T2
+on 
+T1.id
+ = 
+T2.id
+;
+
+select T2.* from table101 as T1
+outer join table102 T2
+on 
+T1.id
+ = 
+T2.id
+;
+
+select * from table101
+union
+select * from table102;
+
+select T1.* from table101 T1
+left join table102 T2
+on 
+T1.id
+ = 
+T2.id
+
+union
+select T2.* from table101 T1
+right join table102 T2
+on 
+T1.id
+ = 
+T2.id
+;
+
+select * from table101
+cross join table102;
+
+select * from self_join;
+
+select emp.emp_id, emp.emp_name, emp.salary as employee_salary,man.emp_name as manager_name,man.salary as manager_Salary from self_join as emp
+inner join self_join as man
+on man.emp_id = emp.manager_id
+where emp.salary > man.salary;
+
+alter table self_join
+add column age int;
+
+alter table self_join
+modify column age int after emp_name;
+
+
+26-7-23
+
+Mohsin Pothiyawala
+Mohsin Pothiyawala says:select * from employee_info
+where address = "bangalore" and project = "P1";
+
+with cte as(select * from employee_info
+where address = "bangalore")
+select * from cte
+where project = "P1";
+
+select * from employee_info
+where mod(emp_id,2) = 0;
+
+with cte as(select *,
+row_number() over() as rn
+from employee_info)
+select * from cte
+where mod(rn,2) = 0;
+
+select * from employee_info;
+
+select * from employee_info
+where (address = "bangalore" and project = "P1") or address = "hyderabad";
+
+with cte1 as(select * from employee_info
+where address = "Bangalore"),
+cte2 as(select * from employee_info
+where address = "hyderabad")
+select * from cte1 
+where project = "P1"
+union
+select * from cte2;
+
+select * from cte1;
+
+select * from employee_info
+order by department;
+
+create view second_highest_salary as
+with cte as(select *,
+dense_rank() over(partition by department order by salary desc) as den_rn
+from employee_info)
+select * from cte
+where den_rn = 2;
+
+select * from second_highest_salary;
+
+select * from employee_info
+where address = "Bangalore";
+
+create view employees111 as
+select * from employee_info
+where address = "bangalore";
+
+select * from employees111;
+
+select * from employees111
+where project = "P1";
+
+select * from employees111
+where department = "HR";
+
+insert into employees111 values(20,"Gitesh","Katre","DS","P10","Ahemdabad","1997-01-07",27,"M",150000);
+
+update employee_info
+set address = "Bangalore"
+where address = "Ahemdabad";
+
+delete from employees111
+where emp_id = 20;
+
+create view grouped as
+select department, count(*) from employee_info
+group by department;
+
+select * from grouped;
+
+create or replace view grouped as
+select department, avg(Salary) from employee_info
+group by department;
+
+drop view grouped;
+
+drop view employees111;
+
+select * from events;
+
+select gold as player_name,count(*) as no_of_gold_medals from events
+where gold not in (select silver from events
+union
+select bronze from events)
+group by gold
+order by no_of_gold_medals desc; 
+
+31-7-23
+
+Mohsin Pothiyawala
+Mohsin Pothiyawala says:/* windows functions - dense_rank, rank, row_number, lead, lag, first_value, last_value, percentile */
+
+select *,
+dense_rank() over() as Den_Rn
+from employee_info;
+
+select *,
+dense_rank() over(partition by address) as Den_Rn
+from employee_info;
+
+select *,
+dense_rank() over(partition by address order by salary desc) as Den_Rn
+from employee_info;
+
+select *,
+dense_rank() over(partition by address order by salary) as Den_Rn
+from employee_info;
+
+select *,
+dense_rank() over(order by salary desc) as Den_Rn
+from employee_info;
+
+select *,
+rank() over(order by salary desc) as rn,
+dense_rank() over(order by salary desc) as Den_Rn
+from employee_info;
+
+select *,
+row_number() over() as row_num
+from employee_info;
+
+select count(*) from employee_info;
+
+with cte as(select *,
+row_number() over() as row_num
+from employee_info)
+select max(row_num) from cte;
+
+select * from employee_info;
+
+select * from employee_info
+where mod(emp_id,2) <> 0;
+
+with cte as(select *,
+row_number() over() as row_num
+from employee_info)
+select * from cte
+where mod(row_num,2) <> 0;
+
+with cte as(select *,
+row_number() over() as row_num
+from employee_info)
+select * from cte
+where mod(row_num,2) = 0;
+
+select count(*)/2 from employee_info;
+
+with cte as(select *,
+row_number() over() as row_num
+from employee_info)
+select * from cte
+where row_num <= (select count(*)/2 from employee_info);
+
+with cte as(select *,
+row_number() over() as row_num
+from employee_info)
+select * from cte
+where row_num >= (select count(*)/2 from employee_info);
+
+select * from employee_info
+where salary in (select max(Salary) from employee_info);
+
+select * from employee_info
+where salary in (select distinct salary from employee_info
+order by salary desc
+limit 1,1);
+
+with cte as(select *,
+dense_rank() over(order by salary desc) as den_rn
+from employee_info)
+select * from cte
+where den_rn = 2;
+
+select * from employee_info
+order by department;
+
+select department, max(salary) from employee_info
+group by department;
+
+
+with cte as(select *,
+dense_rank() over(partition by department order by salary desc) as den_rn
+from employee_info)
+select * from cte
+where den_rn = 1;
+
+with cte as(select *,
+dense_rank() over(partition by department order by salary) as den_rn
+from employee_info)
+select * from cte
+where den_rn = 1;
+
+select *,
+dense_rank() over(partition by address order by salary desc) as den_rn,
+rank() over(partition by address order by salary desc) as rn,
+row_number() over(partition by address order by salary desc) as row_num
+from employee_info;
+
+select count(*) from employee_info
+where address = "Bangalore";
+
+with cte as(select *,
+row_number() over(partition by address) as row_num
+from employee_info)
+select max(row_num) from cte
+where address = "Hyderabad";
+
+select department, sum(salary) from employee_info
+group by department;
+
+select *,
+sum(salary) over(partition by department) as total_amount
+from employee_info;
+
+with cte as(select *,
+avg(salary) over(partition by department) as average_salary
+from employee_info)
+select * from cte
+where salary >= average_salary;
+
+select * from employee_info
+where department = "HR" and salary >= (select avg(salary) from employee_info
+where department = "HR"
+group by department);
+
+select *,
+count(*) over(partition by address) as no_of_employees,
+sum(salary) over(partition by address) as total_amount,
+avg(salary) over(partition by address) as average_salary,
+max(salary) over(partition by address) as maximum_salary,
+min(salary) over(partition by address) as minimum_salary
+from employee_info;
